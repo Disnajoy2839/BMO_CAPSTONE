@@ -54,7 +54,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Wiki
 Visit the Project Wiki for more detailed documentation on the source control strategy and other project details.
 
+## Prototype
 
+![Prototype Screenshot 1](Screenshot%202025-02-02%20234223.png)
+![Prototype Screenshot 2](Screenshot%202025-02-02%20234239.png)
+![Prototype Screenshot 3](Screenshot%202025-02-02%20234255.png)
+![Prototype Screenshot 4](Screenshot%202025-02-02%20234307.png)
+
+These screenshots showcase the prototype of the system, highlighting key features like the user interface and procurement workflows.
 
 
 
