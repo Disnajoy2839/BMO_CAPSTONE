@@ -1,0 +1,160 @@
+﻿@model BOMLink.ViewModels.BOMItemViewModels.BOMItemViewModel
+
+@{
+	ViewData["Title"] = "BOM Items";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+
+				@inject BOMLink.Data.BOMLinkContext _context
+				@{
+					bool hasDraftItems = _context.DraftBOMItems.Any(d => d.BOMId == Model.BOMId && !d.IsResolved);
+				}
+
+				@if (hasDraftItems)
+				{
+					<a asp-action="ReviewDraftItems" asp-route-bomId="@Model.BOMId" class="btn btn-outline-danger w-100 mb-2">
+						Review Draft BOM Items
+					</a>
+				}
+
+				@if (Model.Status != "Approved")
+				{
+					<!-- Add BOM Item -->
+					<a asp-action="CreateOrEdit" asp-route-bomId="@Model.BOMId" class="btn btn-outline-primary w-100 mb-2">Add New Item</a>
+				}
+
+				<!-- Export BOM Items -->
+				<a asp-action="ExportToCSV" asp-route-bomId="@Model.BOMId" class="btn btn-outline-warning w-100 mb-2">Export to CSV</a>
+				<a asp-action="ExportToExcel" asp-route-bomId="@Model.BOMId" class="btn btn-outline-success w-100 mb-2">Export to Excel</a>
+
+				<!-- Back to BOM's page -->
+				<a asp-controller="BOM" asp-action="Index" class="btn btn-outline-secondary w-100 mb-3">
+					Back to BOM List
+				</a>
+
+				<label class="form-label fw-bold">Import Items</label>
+				@if (Model.Status != "Approved")
+				{
+					<!-- Import BOM Items -->
+					<form asp-action="Import" asp-controller="BOMItem" method="post" enctype="multipart/form-data">
+						<div class="input-group">
+							<input type="hidden" name="bomId" value="@Model.BOMId" />
+							<input type="file" name="file" class="form-control" required>
+							<button type="submit" class="btn btn-outline-secondary">Import</button>
+						</div>
+					</form>
+				}
+
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>BOM Items for <strong>@Model.BOMNumber</strong></h2>
+			<p class="text-muted">Description: @Model.Description</p>
+
+			<!-- Search & Filter -->
+			<form method="get" class="mb-3">
+				<input type="hidden" name="bomId" value="@Model.BOMId" /> <!-- Ensure BOM ID is included -->
+
+				<div class="row">
+					<!-- Search Box -->
+					<div class="col-md-6 mb-2">
+						<input type="text" name="searchTerm" class="form-control" placeholder="Search by Part Number, Description, or Manufacturer" value="@Model.SearchTerm">
+					</div>
+
+					<!-- Manufacturer Filter Dropdown -->
+					<div class="col-md-4 mb-2">
+						<select name="manufacturerFilter" class="form-select">
+							<option value="">All Manufacturers</option>
+							@foreach (var manufacturer in Model.AvailableManufacturers)
+							{
+								<option value="@manufacturer" selected="@(Model.ManufacturerFilter == manufacturer ? "selected" : null)">
+									@manufacturer
+								</option>
+							}
+						</select>
+					</div>
+
+					<!-- Search Button -->
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-outline-secondary w-100">Search</button>
+					</div>
+				</div>
+			</form>
+
+			<!-- BOM Items Table -->
+			<table class="table mt-3">
+				<thead class="table-light">
+					<tr>
+						<th>
+							<a href="@Url.Action("Index", new { bomId = Model.BOMId, sortBy = "partNumber", sortOrder = Model.SortBy == "partNumber" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Part Number
+							</a>
+						</th>
+						<th>
+							<a href="@Url.Action("Index", new { bomId = Model.BOMId, sortBy = "description", sortOrder = Model.SortBy == "description" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Description
+							</a>
+						</th>
+						<th>
+							<a href="@Url.Action("Index", new { bomId = Model.BOMId, sortBy = "quantity", sortOrder = Model.SortBy == "quantity" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Quantity
+							</a>
+						</th>
+						<th>
+							<a href="@Url.Action("Index", new { bomId = Model.BOMId, sortBy = "manufacturer", sortOrder = Model.SortBy == "manufacturer" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Manufacturer
+							</a>
+						</th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.BOMItems)
+					{
+						<tr>
+							<td>@item.PartNumber</td>
+							<td>@item.PartDescription</td>
+							<td>@item.Quantity</td>
+							<td>@item.Manufacturer</td>
+							<td class="text-end">
+								<div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+									@if (Model.Status != "Approved")
+									{
+										<!-- Edit Item -->
+										<a asp-action="CreateOrEdit" asp-route-id="@item.Id" asp-route-bomId="@Model.BOMId" class="text-warning" data-bs-toggle="tooltip" title="Edit Item">
+											<i class="fa-solid fa-edit"></i>
+										</a>
+
+
+										<!-- Delete Item -->
+										<form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
+											  onsubmit="return confirm('Are you sure you want to delete this item?');">
+											<button type="submit" class="btn btn-link text-danger p-0 border-0" data-bs-toggle="tooltip" title="Delete Item">
+												<i class="fa-solid fa-trash"></i>
+											</button>
+										</form>
+									}
+									else
+									{
+										<span class="text-muted me-3" data-bs-toggle="tooltip" title="Approved BOMs cannot be modified">
+											<i class="fa-solid fa-lock"></i>
+										</span>
+									}
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</main>
+	</div>
+</div>
+

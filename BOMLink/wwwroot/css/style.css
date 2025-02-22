@@ -1,0 +1,80 @@
+﻿/* Form Styling */
+.card {
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Profile Bubble */
+.profile-bubble {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #6c757d; /* Gray */
+    color: white;
+}
+
+/* Increase Navbar Spacing */
+.navbar-nav .nav-item {
+    margin-right: 15px;
+}
+
+/* Ensure Navbar Background is Fixed in Light Mode */
+.fixed-header {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+    .fixed-header .nav-link {
+        color: #212529 !important;
+    }
+
+    .fixed-header .dropdown-menu {
+        background-color: #ffffff !important;
+    }
+
+    .fixed-header .dropdown-item {
+        color: #212529 !important;
+    }
+
+        .fixed-header .dropdown-item:hover {
+            background-color: #e9ecef !important;
+        }
+
+    .fixed-header .text-logout {
+        color: #dc3545 !important;
+    }
+
+/* Uniform card and button heights */
+.equal-height {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+    .equal-height .card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+.btn-full {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+}
+
+/* Ensure Footer Background is Fixed in Light Mode */
+.fixed-footer {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+

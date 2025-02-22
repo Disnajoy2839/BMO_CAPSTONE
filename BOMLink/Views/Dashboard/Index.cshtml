@@ -1,0 +1,86 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-5 pt-5 flex-grow-1">
+    <h1 class="mb-4">Dashboard</h1>
+
+    <!-- Summary Cards -->
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total BOMs</h5>
+                    <p class="card-text fs-3 fw-bold text-primary">@Model.TotalBOMs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">RFQs Waiting Reply</h5>
+                    <p class="card-text fs-3 fw-bold text-success">@Model.OpenRFQs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pending POs</h5>
+                    <p class="card-text fs-3 fw-bold text-warning">@Model.PendingPOs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Packing Slip Mismatches</h5>
+                    <p class="card-text fs-3 fw-bold text-danger">@Model.PackingSlipMismatches</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Access Cards -->
+    <div class="row g-3 mt-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">BOMs</h5>
+                    <p class="card-text">Upload and manage your Bill of Materials.</p>
+                    <a href="@Url.Action("Index", "BOM")" class="btn btn-outline-primary btn-full">Go to BOMs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">RFQs</h5>
+                    <p class="card-text">Generate and track requests for quotes.</p>
+                    <a href="@Url.Action("Index", "RFQ")" class="btn btn-outline-primary btn-full">Go to RFQs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">POs</h5>
+                    <p class="card-text">Manage purchase orders efficiently.</p>
+                    <a href="@Url.Action("Index", "PO")" class="btn btn-outline-primary btn-full">Go to POs</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm equal-height">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Packing Slips</h5>
+                    <p class="card-text">Manage packing slips and reconcile orders.</p>
+                    <a href="@Url.Action("Index", "PackingSlip")" class="btn btn-outline-primary btn-full">Go to Packing Slips</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,9 @@
+﻿<select name="BOMId" class="form-select">
+    <option value="">Select a BOM</option>
+    @foreach (var bom in Model.AvailableBOMs)
+    {
+        <option value="@bom.Id" disabled="@(bom.Status == "Draft")">
+            @(bom.BOMNumber) - @bom.Description (@bom.Status)
+        </option>
+    }
+</select>

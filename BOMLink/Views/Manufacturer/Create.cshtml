@@ -1,0 +1,20 @@
+﻿@* @model BOMLink.Models.Manufacturer
+
+@{
+    ViewData["Title"] = "Create Manufacturer";
+}
+
+<div class="container mt-4">
+    <h2>Add Manufacturer</h2>
+
+    <form asp-action="Create">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Manufacturer Name</label>
+            <input asp-for="Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>
+ *@

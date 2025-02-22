@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>@ViewData["Title"] - BOMLink</title>
+	<link rel="icon" href="~/images/icon.png" />
+
+	<!-- Bootstrap & Custom Styles -->
+	<link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/font-awesome/css/all.css" />
+	<link href="~/css/style.css" rel="stylesheet">
+	<script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Theme Persistent -->
+	<script>
+		(function () {
+			let savedTheme = "light"; // Default theme
+
+			try {
+				// Try localStorage first, fallback to sessionStorage
+				savedTheme = localStorage.getItem("theme") || sessionStorage.getItem("theme") || "light";
+			} catch (error) {
+				console.warn("Storage access blocked. Falling back to default light mode.");
+				savedTheme = "light";
+			}
+
+			console.log("Applying Theme:", savedTheme);
+			document.documentElement.setAttribute("data-bs-theme", savedTheme);
+		})();
+	</script>
+
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+	<!-- Header -->
+	<header class="navbar fixed-top border-bottom shadow-sm p-3 fixed-header">
+		<div class="container-fluid d-flex justify-content-between align-items-center">
+			<div class="d-flex align-items-center">
+				<!-- Company Logo -->
+				<a class="nav-link" asp-controller="Home" asp-action="Index">
+					<img src="~/images/logo-black-in-white.png" alt="ADA Solutions Logo" height="40">
+				</a>
+
+				<!-- Divider -->
+				<div class="vr mx-3"></div>
+
+				<!-- App Icon and Name -->
+				<a class="nav-link" asp-controller="Home" asp-action="Index">
+					<img src="~/images/icon.png" alt="BOMLink Icon" height="40" class="me-2">
+				</a>
+				<a class="nav-link" asp-controller="Home" asp-action="Index">
+					<h1 class="fs-4 fw-bold m-0">BOMLink</h1>
+				</a>
+			</div>
+
+			<!-- Show Navigation Only If User is Authenticated -->
+			@if (User.Identity?.IsAuthenticated ?? false)
+			{
+				<nav class="navbar navbar-expand-lg">
+					<div class="container-fluid">
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+							<span class="navbar-toggler-icon text-dark"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNav">
+							<ul class="navbar-nav ms-auto">
+								<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+								<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Index", "BOM")">BOM</a></li>
+								<!--<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Upload", "OCR")">OCR</a></li>-->
+								<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Index", "RFQ")">RFQ</a></li>
+								<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Index", "PO")">PO</a></li>
+								<li class="nav-item mx-3"><a class="nav-link" href="@Url.Action("Index", "PackingSlip")">Packing Slip</a></li>
+								<li class="nav-item dropdown mx-3">
+									<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Database</a>
+									<ul class="dropdown-menu">
+										<li><a class="dropdown-item" href="@Url.Action("Index", "Part")">Parts</a></li>
+										<li><a class="dropdown-item" href="@Url.Action("Index", "Job")">Jobs</a></li>
+										<li><a class="dropdown-item" href="@Url.Action("Index", "Customer")">Customers</a></li>
+										<li><a class="dropdown-item" href="@Url.Action("Index", "Supplier")">Suppliers</a></li>
+										<li><a class="dropdown-item" href="@Url.Action("Index", "Manufacturer")">Manufacturers</a></li>
+										<li><a class="dropdown-item" href="@Url.Action("Index", "SupplierManufacturer")">Supplier/Manufacturer Mapping</a></li>
+										<!-- Show Admin Panel Only for Admin Users -->
+										@if (User.IsInRole("Admin"))
+										{
+											<li class="nav-item mx-3">
+												<a class="nav-link fw-bold dropdown-item" href="@Url.Action("Users", "Admin")">
+													User Management
+												</a>
+											</li>
+										}
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+			}
+
+			<div class="d-flex align-items-center">
+				<!-- Theme toggle -->
+				<div class="form-check form-switch d-flex align-items-center mx-3">
+					<input class="form-check-input" type="checkbox" role="switch" id="themeToggle" onclick="toggleTheme()">
+					<label class="form-check-label ms-2" for="themeToggle">
+						<i id="theme-icon" class="fa-solid fa-sun"></i>
+					</label>
+				</div>
+
+				<!-- Show user profile only if user is authenticated -->
+				@if (User.Identity?.IsAuthenticated ?? false)
+				{
+					<div class="dropdown">
+						<div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center profile-bubble dropdown-toggle"
+							 id="profileMenu" data-bs-toggle="dropdown">
+							@User.Identity.Name.Substring(0, Math.Min(3, User.Identity.Name.Length)).ToUpper()
+						</div>
+						<ul class="dropdown-menu dropdown-menu-end">
+							<li><a class="dropdown-item" href="@Url.Action("Settings", "User")">Settings</a></li>
+							<li><a class="dropdown-item text-logout" href="@Url.Action("Logout", "User")">Logout</a></li>
+						</ul>
+					</div>
+				}
+			</div>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<main class="container mt-5 pt-5 flex-grow-1">
+		@if (TempData["Error"] != null)
+		{
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				@TempData["Error"]
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		}
+		@if (TempData["Success"] != null)
+		{
+			<div id="tempMessage" class="alert alert-success">@TempData["Success"]</div>
+		}
+		@if (TempData["Info"] != null)
+		{
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				@TempData["Info"]
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		}
+		@if (TempData["Debug"] != null)
+		{
+			<div class="alert alert-info">
+				@Html.Raw(TempData["Debug"])
+			</div>
+		}
+
+		@RenderBody()
+	</main>
+
+	<!-- Sticky Footer (Moves down when needed) -->
+	<footer class="text-center p-3 border-top mt-5">
+		&copy; 2025 ADA Solutions. All rights reserved. | Powered by <strong>BOMLink</strong>
+	</footer>
+
+	<!-- Scripts -->
+	<script src="~/js/script.js"></script>
+	@RenderSection("Scripts", required: false)
+</body>
+</html>

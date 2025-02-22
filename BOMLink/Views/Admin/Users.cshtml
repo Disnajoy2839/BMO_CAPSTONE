@@ -1,0 +1,129 @@
+﻿@model BOMLink.ViewModels.UserViewModels.UserViewModel
+
+@{
+	ViewData["Title"] = "User Management";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+
+				<!-- Add New User Button -->
+				<a href="@Url.Action("CreateUser", "Admin")" class="btn btn-outline-primary w-100 mb-2">Add User</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>User Management</h2>
+
+			<!-- Search & Filter -->
+			<form method="get" class="mb-3">
+				<div class="row">
+					<div class="col-md-6 mb-2">
+						<input type="text" name="searchTerm" class="form-control" placeholder="Search by Username or Email" value="@Model.SearchTerm">
+					</div>
+					<div class="col-md-4 mb-2">
+						<select name="role" class="form-select">
+							<option value="">Filter by Role</option>
+							<option value="Admin" selected="@(Model.RoleFilter == "Admin" ? "selected" : null)">Admin</option>
+							<option value="PM" selected="@(Model.RoleFilter == "PM" ? "selected" : null)">Project Manager</option>
+							<option value="Receiving" selected="@(Model.RoleFilter == "Receiving" ? "selected" : null)">Receiving</option>
+							<option value="Guest" selected="@(Model.RoleFilter == "Guest" ? "selected" : null)">Guest</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-outline-secondary w-100">Search</button>
+					</div>
+				</div>
+			</form>
+
+			<!-- User List Table -->
+			<table class="table mt-3">
+				<thead class="table-light">
+					<tr>
+						<th>
+							<a href="@Url.Action("Users", new { sortBy = "username", sortOrder = Model.SortBy == "username" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm, role = Model.RoleFilter })">
+								Username
+							</a>
+						</th>
+						<th>
+							<a href="@Url.Action("Users", new { sortBy = "email", sortOrder = Model.SortBy == "email" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm, role = Model.RoleFilter })">
+								Email
+							</a>
+						</th>
+						<th>
+							<a href="@Url.Action("Users", new { sortBy = "role", sortOrder = Model.SortBy == "role" && Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm, role = Model.RoleFilter })">
+								Role
+							</a>
+						</th>
+						<th>Last Login</th>
+						<th>Status</th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var user in Model.Users)
+					{
+						<tr>
+							<td>@user.Username</td>
+							<td>@user.Email</td>
+							<td>@user.Role</td>
+							<td>@(user.LastLogin?.ToString("g") ?? "Never")</td>
+							<td>
+								@if (user.IsActive)
+								{
+									<span class="badge bg-success">Active</span>
+								}
+								else
+								{
+									<span class="badge bg-danger">Disabled</span>
+								}
+							</td>
+							<td class="text-end">
+								<div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+									<!-- Edit User -->
+									<a href="@Url.Action("EditUser", "Admin", new { id = user.Id })" class="text-warning" data-bs-toggle="tooltip" title="Edit User">
+										<i class="fa-solid fa-edit"></i>
+									</a>
+
+									<!-- Enable/Disable User -->
+									<a href="#" class="@(user.IsActive ? "text-danger" : "text-success")"
+									   data-bs-toggle="tooltip" title="@(user.IsActive ? "Disable User" : "Enable User")"
+									   onclick="document.getElementById('toggleUserForm-@user.Id').submit(); return false;">
+										<i class="fa-solid @(user.IsActive ? "fa-user-slash" : "fa-user-check")"></i>
+									</a>
+									<form id="toggleUserForm-@user.Id" asp-action="ToggleUserStatus" asp-controller="Admin" method="post" class="d-none">
+										<input type="hidden" name="id" value="@user.Id" />
+									</form>
+
+									<!-- Reset Password -->
+									<a href="#" class="text-info" data-bs-toggle="tooltip" title="Reset Password"
+									   onclick="document.getElementById('resetPasswordForm-@user.Id').submit(); return false;">
+										<i class="fa-solid fa-key"></i>
+									</a>
+									<form id="resetPasswordForm-@user.Id" asp-action="ResetPassword" asp-controller="Admin" method="post" class="d-none">
+										<input type="hidden" name="id" value="@user.Id" />
+									</form>
+
+									<!-- Delete User -->
+									<a href="#" class="text-danger" data-bs-toggle="tooltip" title="Delete User"
+									   onclick="if (confirm('Are you sure you want to delete this user?')) document.getElementById('deleteUserForm-@user.Id').submit(); return false;">
+										<i class="fa-solid fa-trash"></i>
+									</a>
+									<form id="deleteUserForm-@user.Id" asp-action="DeleteUser" asp-controller="Admin" method="post" class="d-none">
+										<input type="hidden" name="id" value="@user.Id" />
+									</form>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+		</main>
+	</div>
+</div>

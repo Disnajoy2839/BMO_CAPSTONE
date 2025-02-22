@@ -1,0 +1,120 @@
+﻿@model BOMLink.ViewModels.RFQViewModel.RFQViewModel
+@{
+	ViewData["Title"] = "Request for Quotes";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a href="@Url.Action("GenerateRFQSelection", "RFQ")" class="btn btn-outline-primary w-100 mb-2">Generate RFQs</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Request for Quotes</h2>
+
+			<!-- Search & Filters -->
+			<form method="get" class="mb-3">
+				<div class="row">
+					<div class="col-md-4 mb-2">
+						<input type="text" name="searchTerm" class="form-control" placeholder="Search by RFQ Number, Supplier or BOM" value="@Model.SearchTerm">
+					</div>
+
+					<!-- Filter by Status -->
+					<div class="col-md-3 mb-2">
+						<select name="statusFilter" class="form-select">
+							<option value="">All Status</option>
+							@foreach (var status in Model.AvailableStatuses)
+							{
+								<option value="@status" selected="@(Model.StatusFilter == status ? "selected" : null)">@status</option>
+							}
+						</select>
+					</div>
+
+					<!-- Filter by Supplier -->
+					<div class="col-md-3 mb-2">
+						<select name="supplierFilter" class="form-select">
+							<option value="">All Suppliers</option>
+							@foreach (var supplier in Model.AvailableSuppliers)
+							{
+								<option value="@supplier" selected="@(Model.SupplierFilter == supplier ? "selected" : null)">@supplier</option>
+							}
+						</select>
+					</div>
+
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-outline-secondary w-100">Search</button>
+					</div>
+				</div>
+			</form>
+
+			<!-- RFQ Table -->
+			<table class="table mt-3">
+				<thead class="table-light">
+					<tr>
+						<th><a href="@Url.Action("Index", new { sortBy = "rfqNumber", sortOrder = Model.SortBy == "rfqNumber" && Model.SortOrder == "asc" ? "desc" : "asc" })">RFQ Number</a></th>
+						<th><a href="@Url.Action("Index", new { sortBy = "supplier", sortOrder = Model.SortBy == "supplier" && Model.SortOrder == "asc" ? "desc" : "asc" })">Supplier</a></th>
+						<th><a href="@Url.Action("Index", new { sortBy = "bom", sortOrder = Model.SortBy == "bom" && Model.SortOrder == "asc" ? "desc" : "asc" })">BOM</a></th>
+						<th><a href="@Url.Action("Index", new { sortBy = "status", sortOrder = Model.SortBy == "status" && Model.SortOrder == "asc" ? "desc" : "asc" })">Status</a></th>
+						<th><a href="@Url.Action("Index", new { sortBy = "createdBy", sortOrder = Model.SortBy == "createdBy" && Model.SortOrder == "asc" ? "desc" : "asc" })">Created By</a></th>
+						<th><a href="@Url.Action("Index", new { sortBy = "updatedAt", sortOrder = Model.SortBy == "updatedAt" && Model.SortOrder == "asc" ? "desc" : "asc" })">Last Updated</a></th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var rfq in ViewBag.RFQs)
+					{
+						<tr>
+							<td>
+								<a href="@Url.Action("Details", "RFQ", new { id = rfq.Id })">
+									@rfq.RFQNumber
+								</a>
+							<td>@rfq.SupplierName</td>
+							<td>@rfq.BOMNumber</td>
+							<td>
+								<span class="badge @(rfq.Status == "Draft" ? "bg-secondary"
+                                                : rfq.Status == "Sent" ? "bg-warning text-dark"
+                                                : rfq.Status == "Received" ? "bg-success"
+                                                : "bg-danger")">
+										@rfq.Status
+								</span>
+							</td>
+							<td>@rfq.CreatedBy</td>
+							<td>@rfq.UpdatedAt.ToString("g")</td>
+							<td class="text-end">
+								<div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+									<!-- Send RFQ by Email-->
+									@if (rfq.Status == "Draft")
+									{
+										<form asp-controller="RFQ" asp-action="SendRFQ" asp-route-id=@rfq.Id method="post">
+											<button type="submit" class="btn text-success btn-link p-0 border-0" data-bs-toggle="tooltip" title="Send RFQ">
+												<i class="fa-solid fa-paper-plane"></i>
+											</button>
+										</form>
+									}
+
+									<!-- View RFQ Items -->
+									<a href="@Url.Action("Index", "RFQItem", new { rfqId = rfq.Id })" class="text-info" data-bs-toggle="tooltip" title="View Items">
+										<i class="fa-solid fa-box-open"></i>
+									</a>
+
+									<!-- Delete RFQ -->
+									<form asp-action="Delete" asp-route-id="@rfq.Id" method="post" class="d-inline"
+										  onsubmit="return confirm('Are you sure you want to delete this RFQ?');">
+										<button type="submit" class="btn btn-link text-danger p-0 border-0" data-bs-toggle="tooltip" title="Delete RFQ">
+											<i class="fa-solid fa-trash"></i>
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</main>
+	</div>
+</div>

@@ -1,0 +1,70 @@
+﻿@model BOMLink.ViewModels.CustomerViewModels.CreateOrEditCustomerViewModel
+
+@{
+	bool isEdit = Model.Id.HasValue;
+	ViewData["Title"] = isEdit ? "Edit Customer" : "Add Customer";
+}
+
+<div class="container mt-4">
+	<h2>@ViewData["Title"]</h2>
+
+	<form asp-action="CreateOrEdit">
+		@Html.AntiForgeryToken()
+		@if (isEdit)
+		{
+			<input type="hidden" asp-for="Id" />
+		}
+		<div class="row">
+			<div class="col-md-6">
+				<div class="mb-3">
+					<label asp-for="Name" class="form-label">Customer Name</label>
+					<input asp-for="Name" class="form-control" required />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="CustomerCode" class="form-label">Customer Code</label>
+					<input asp-for="CustomerCode" class="form-control" required />
+					<span asp-validation-for="CustomerCode" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="Address" class="form-label">Address</label>
+					<input asp-for="Address" class="form-control" />
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="City" class="form-label">City</label>
+					<input asp-for="City" class="form-control" />
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="mb-3">
+					<label asp-for="Province" class="form-label">Province</label>
+					<input asp-for="Province" class="form-control" />
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="ContactName" class="form-label">Contact Name</label>
+					<input asp-for="ContactName" class="form-control" />
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="ContactPhone" class="form-label">Contact Phone</label>
+					<input asp-for="ContactPhone" class="form-control" />
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="ContactEmail" class="form-label">Contact Email</label>
+					<input asp-for="ContactEmail" class="form-control" />
+					<span asp-validation-for="ContactEmail" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="mt-4">
+				<button type="submit" class="btn btn-outline-primary">Save</button>
+				<a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+			</div>
+	</form>
+</div>

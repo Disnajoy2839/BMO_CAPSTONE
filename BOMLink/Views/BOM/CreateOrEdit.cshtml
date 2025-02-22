@@ -1,0 +1,89 @@
+﻿@model BOMLink.ViewModels.BOMViewModels.CreateOrEditBOMViewModel
+
+@{
+	bool isEdit = Model.Id.HasValue;
+	ViewData["Title"] = isEdit ? "Edit BOM" : "Create BOM";
+	string submitText = isEdit ? "Save Changes" : "Create BOM";
+}
+
+<div class="container-fluid mt-4">
+	<h2>@ViewData["Title"]</h2>
+
+	@if (isEdit && Model.Status == BOMStatus.Locked)
+	{
+		<div class="alert alert-warning">This BOM is Locked and cannot be edited.</div>
+		<a asp-action="Index" class="btn btn-secondary">Back</a>
+	}
+	else
+	{
+		<form asp-action="CreateOrEdit" asp-controller="BOM" method="post">
+			@if (isEdit)
+			{
+				<input type="hidden" asp-for="Id" />
+			}
+
+			<!-- Description -->
+			<div class="mb-3">
+				<label class="form-label fw-bold">Description</label>
+				<input type="text" class="form-control" asp-for="Description" required>
+				<span class="text-danger" asp-validation-for="Description"></span>
+			</div>
+
+			<!-- Job Selection -->
+			<div class="mb-3">
+				<label class="form-label fw-bold">Select Job (Optional)</label>
+				<select id="jobDropdown" class="form-select" asp-for="JobId" onchange="toggleCustomerDropdown()">
+					<option value="">-- Select Job --</option>
+					@foreach (var job in Model.AvailableJobs)
+					{
+						<option value="@job.Id" data-customer="@job.CustomerId">@job.Number</option>
+					}
+				</select>
+				<span class="text-danger" asp-validation-for="JobId"></span>
+			</div>
+
+			<!-- Customer Selection (if no Job) -->
+			<div class="mb-3">
+				<label class="form-label fw-bold">Select Customer (If No Job)</label>
+				<select id="customerDropdown" class="form-select" asp-for="CustomerId">
+					<option value="0">-- Select Customer --</option>
+					@foreach (var customer in Model.AvailableCustomers)
+					{
+						<option value="@customer.Id">@customer.CustomerCode - @customer.Name</option>
+					}
+				</select>
+				<span class="text-danger" asp-validation-for="CustomerId"></span>
+			</div>
+
+			<!-- Submit Buttons -->
+			<div class="mt-4">
+				<button type="submit" class="btn btn-outline-primary">@submitText</button>
+				<a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+			</div>
+		</form>
+	}
+</div>
+
+@section Scripts {
+	<script>
+		function toggleCustomerDropdown() {
+			var jobDropdown = document.getElementById("jobDropdown");
+			var customerDropdown = document.getElementById("customerDropdown");
+
+			var selectedJob = jobDropdown.options[jobDropdown.selectedIndex];
+			var associatedCustomerId = selectedJob.getAttribute("data-customer");
+
+			if (selectedJob.value) {
+				// A job is selected, auto-set Customer and disable selection
+				customerDropdown.value = associatedCustomerId;
+				customerDropdown.disabled = true;
+			} else {
+				// No job is selected, enable customer selection
+				customerDropdown.disabled = false;
+			}
+		}
+
+		// Run on page load in case there's a pre-selected Job
+		document.addEventListener("DOMContentLoaded", toggleCustomerDropdown);
+	</script>
+}

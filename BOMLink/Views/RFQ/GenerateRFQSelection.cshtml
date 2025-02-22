@@ -1,0 +1,26 @@
+﻿@model BOMLink.ViewModels.RFQViewModel.GenerateRFQViewModel
+
+@{
+    ViewData["Title"] = "Select BOM to Generate RFQ";
+}
+
+<div class="container mt-4">
+    <h2>Select BOM to Generate RFQ</h2>
+    <p class="text-muted">Only BOMs with status <strong>Ready</strong> are available.</p>
+
+    <form method="post" asp-action="GenerateRFQ">
+        <div class="mb-3">
+            <label for="bomId" class="form-label fw-bold">Select BOM:</label>
+            <select id="bomId" name="bomId" class="form-select" required>
+                <option value="">-- Select BOM --</option>
+                @foreach (var bom in Model.ReadyBOMs)
+                {
+                    <option value="@bom.Id">BOM-@bom.Id - @bom.Description</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Generate RFQ</button>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

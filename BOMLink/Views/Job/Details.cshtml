@@ -1,0 +1,136 @@
+﻿@model BOMLink.ViewModels.JobViewModels.JobDetailsViewModel
+
+@{
+	ViewData["Title"] = "Job Details";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a asp-action="CreateOrEdit" asp-route-id="@Model.Id" class="btn btn-outline-warning w-100 mb-2">Edit</a>
+				<a asp-action="Index" class="btn btn-outline-secondary w-100 mb-3">Back to Jobs</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Job Details</h2>
+
+			<table class="table mt-3">
+				<tr>
+					<th>Job Number:</th>
+					<td>@Model.Number</td>
+				</tr>
+				<tr>
+					<th>Description:</th>
+					<td>@Model.Description</td>
+				</tr>
+				<tr>
+					<th>Customer:</th>
+					<td>@Model.CustomerName</td>
+				</tr>
+				<tr>
+					<th>Start Date:</th>
+					<td>@Model.StartDate.ToString("yyyy-MM-dd")</td>
+				</tr>
+				<tr>
+					<th>Contact Name:</th>
+					<td>@(string.IsNullOrEmpty(Model.ContactName) ? "N/A" : Model.ContactName)</td>
+				</tr>
+				<tr>
+					<th>Status:</th>
+					<td>
+						<span class="badge @(GetStatusBadgeClass(@Model.Status.ToString()))">
+							@Model.Status
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<th>Created By:</th>
+					<td>@Model.CreatedBy</td>
+				</tr>
+				<tr>
+					<th>Created At:</th>
+					<td>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+				</tr>
+				<tr>
+					<th>Last Updated:</th>
+					<td>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+				</tr>
+			</table>
+
+			<h4 class="mt-4">BOM's</h4>
+			@if (Model.BOMs.Any())
+			{
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>BOM Number</th>
+							<th>BOM Description</th>
+							<th>Status</th>
+							<th>Created By</th>
+							<th>Created At</th>
+							<th>Last Updated</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var bom in Model.BOMs)
+						{
+							<tr>
+								<td>
+									<a href="@Url.Action("Details", "BOM", new { id = bom.Id })">
+										@bom.BOMNumber
+									</a>
+								</td>
+								<td>@bom.Description</td>
+								<td>
+									<span class="badge @(GetStatusBadgeClassBOM(bom.Status.ToString()))">
+										@bom.Status
+									</span>
+								</td>
+								<td>@bom.CreatedBy</td>
+								<td>@bom.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+								<td>@bom.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+			else
+			{
+				<p>No BOMs found for this job.</p>
+			}
+		</main>
+	</div>
+</div>
+
+@functions {
+	string GetStatusBadgeClass(string status)
+	{
+		return status switch
+		{
+			"Pending" => "bg-secondary",
+			"InProgress" => "bg-warning text-dark",
+			"Completed" => "bg-success",
+			"Canceled" => "bg-danger",
+			_ => "bg-light text-dark"
+		};
+	}
+}
+
+@functions {
+	string GetStatusBadgeClassBOM(string status)
+	{
+		return status switch
+		{
+			"Draft" => "bg-secondary",
+			"Incomplete" => "bg-warning text-dark",
+			"Ready" => "bg-success",
+			"Locked" => "bg-danger",
+			_ => "bg-light text-dark"
+		};
+	}
+}

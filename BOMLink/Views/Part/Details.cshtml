@@ -1,0 +1,84 @@
+﻿@model BOMLink.ViewModels.PartViewModels.PartDetailsViewModel
+
+@{
+	ViewData["Title"] = "Part Details";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a asp-action="CreateOrEdit" asp-route-id="@Model.Id" class="btn btn-outline-warning w-100 mb-2">Edit</a>
+				<a asp-action="Index" class="btn btn-outline-secondary w-100 mb-3">Back to List</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Part Details</h2>
+
+			<table class="table mt-3">
+				<tr>
+					<th>Part Number:</th>
+					<td>@Model.PartNumber</td>
+				</tr>
+				<tr>
+					<th>Description:</th>
+					<td>@Model.Description</td>
+				</tr>
+				<tr>
+					<th>Manufacturer:</th>
+					<td>@Model.Manufacturer</td>
+				</tr>
+				<tr>
+					<th>UOM:</th>
+					<td>@Model.Unit</td>
+				</tr>
+				<tr>
+					<th>Labour:</th>
+					<td>@Model.Labour</td>
+				</tr>
+				<tr>
+					<th>Created At:</th>
+					<td>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+				</tr>
+				<tr>
+					<th>Last Updated:</th>
+					<td>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+				</tr>
+			</table>
+
+			<h4 class="mt-4">Used in BOMs</h4>
+			@if (Model.BOMItems.Any())
+			{
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>BOM Number</th>
+							<th>BOM Description</th>
+							<th>Status</th>
+							<th>Quantity Used</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var bomItem in Model.BOMItems)
+						{
+							<tr>
+								<td>@bomItem.BOMNumber</td>
+								<td>@bomItem.BOMDescription</td>
+								<td>@bomItem.BOMStatus</td>
+								<td>@bomItem.QuantityUsed</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+			else
+			{
+				<p class="text-muted">This part is not used in any BOMs.</p>
+			}
+		</main>
+	</div>
+</div>

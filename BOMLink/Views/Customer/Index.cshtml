@@ -1,0 +1,97 @@
+﻿@model BOMLink.ViewModels.CustomerViewModel.CustomerViewModel
+
+@{
+	ViewData["Title"] = "Customers";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+
+				<!-- Add, Export, and Import Buttons -->
+				<a href="@Url.Action("CreateOrEdit", "Customer")" class="btn btn-outline-primary w-100 mb-2">Add Customer</a>
+				<a href="@Url.Action("ExportToCSV", "Customer")" class="btn btn-outline-warning w-100 mb-2">Export to CSV</a>
+				<a href="@Url.Action("ExportToExcel", "Customer")" class="btn btn-outline-success w-100 mb-3">Export to Excel</a>
+
+				<!-- Import Form -->
+				<form asp-action="Import" asp-controller="Customer" method="post" enctype="multipart/form-data">
+					<label class="form-label fw-bold">Import Customers</label>
+					<div class="input-group">
+						<input type="file" class="form-control" name="file" required>
+						<button type="submit" class="btn btn-outline-secondary">Import</button>
+					</div>
+				</form>
+			</div>
+		</aside>
+
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Customers</h2>
+
+			<!-- Search Form -->
+			<form method="get" class="mb-3">
+				<div class="input-group">
+					<input type="text" name="searchTerm" class="form-control" placeholder="Search by Name or Code" value="@Model.SearchTerm">
+					<button type="submit" class="btn btn-outline-secondary">Search</button>
+				</div>
+			</form>
+
+			<table class="table mt-3">
+				<thead class="table-light">
+					<tr>
+						<th>
+							<a href="@Url.Action("Index", new { sortBy = "name", sortOrder = Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Name
+							</a>
+						</th>
+						<th>
+							Contact
+						</th>
+						<th>
+							Phone
+						</th>
+						<th>
+							<a href="@Url.Action("Index", new { sortBy = "code", sortOrder = Model.SortOrder == "asc" ? "desc" : "asc", searchTerm = Model.SearchTerm })">
+								Code
+							</a>
+						</th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var customer in Model.Customers)
+					{
+						<tr>
+							<td>
+								<a href="@Url.Action("Details", "Customer", new { id = customer.Id })">
+									@customer.Name
+								</a>
+							</td>
+							<td>@customer.ContactName</td>
+							<td>@customer.ContactPhone</td>
+							<td>@customer.CustomerCode</td>
+							<td class="text-end">
+								<div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+									<!-- Edit Icon -->
+									<a href="@Url.Action("CreateOrEdit", "Customer", new { id = customer.Id })" class="text-warning" data-bs-toggle="tooltip" title="Edit Customer">
+										<i class="fa-solid fa-edit"></i>
+									</a>
+									<!-- Delete Icon (With Confirmation) -->
+									<form asp-action="Delete" asp-route-id="@customer.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this customer?');">
+										<button type="submit" class="btn btn-link text-danger p-0 border-0" data-bs-toggle="tooltip" title="Delete Customer">
+											<i class="fa-solid fa-trash"></i>
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</main>
+	</div>
+</div>

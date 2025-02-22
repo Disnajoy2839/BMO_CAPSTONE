@@ -1,0 +1,32 @@
+﻿@model List<List<string>>
+
+@{
+    ViewData["Title"] = "Extracted Table from OCR";
+}
+
+<h2>Extracted Table from OCR</h2>
+
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            @if (Model.Any())
+            {
+                @foreach (var column in Model.First())
+                {
+                    <th>@column</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.Skip(1))
+        {
+            <tr>
+                @foreach (var cell in row)
+                {
+                    <td>@cell</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

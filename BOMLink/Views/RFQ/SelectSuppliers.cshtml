@@ -1,0 +1,34 @@
+﻿@model BOMLink.ViewModels.RFQViewModel.SupplierSelectionViewModel
+
+<h2>Select Suppliers for BOM-@Model.BOMId</h2>
+<form method="post" action="@Url.Action("ProcessSupplierSelection", "RFQ")">
+    <input type="hidden" name="BOMId" value="@Model.BOMId" />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Manufacturer</th>
+                <th>Supplier</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var option in Model.ManufacturerOptions)
+            {
+                <tr>
+                    <td>@option.ManufacturerName</td>
+                    <td>
+                        <select name="selectedSuppliers[@option.ManufacturerId]" class="form-select">
+                            @foreach (var supplier in option.SupplierOptions)
+                            {
+                                <option value="@supplier.SupplierId">@supplier.SupplierName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-outline-primary">Generate RFQs</button>
+	<a href="@Url.Action("Index", "BOM")" class="btn btn-outline-secondary">Cancel</a>
+</form>

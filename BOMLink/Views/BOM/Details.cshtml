@@ -1,0 +1,126 @@
+﻿@model BOMLink.ViewModels.BOMViewModels.BOMDetailsViewModel
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a asp-controller="BOMItem" asp-action="Index" asp-route-bomId="@Model.BOMId" class="btn btn-outline-primary w-100 mb-2">Manage BOM Items</a>
+				<a asp-controller="BOM" asp-action="CreateOrEdit" asp-route-id="@Model.BOMId" class="btn btn-outline-warning w-100 mb-2">Edit BOM</a>
+				<a asp-controller="BOM" asp-action="Index" class="btn btn-outline-secondary w-100 mb-3">Back to BOM List</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+
+			<h2>BOM Details</h2>
+			<h5 class="text-muted">BOM Number: @Model.BOMNumber</h5>
+
+			<table class="table mt-3">
+				<tr>
+					<th>Status:</th>
+					<td>
+						<span class="badge @(GetStatusBadgeClass(Model.Status))">@Model.Status</span>
+					</td>
+				</tr>
+				<tr><th>Customer:</th><td>@Model.CustomerName</td></tr>
+				<tr><th>Job Number:</th><td>@Model.JobNumber</td></tr>
+				<tr><th>Created By:</th><td>@Model.CreatedBy</td></tr>
+				<tr><th>Last Updated:</th><td>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td></tr>
+			</table>
+
+			<h4>BOM Items</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Part Number</th>
+						<th>Description</th>
+						<th>Quantity</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.BOMItems)
+					{
+						<tr>
+							<td>
+								<a asp-controller="Part" asp-action="Details" asp-route-id="@item.PartId" class="text-decoration-none">
+									@item.PartNumber
+								</a>
+							</td>
+							<td>@item.Description</td>
+							<td>@item.Quantity</td>
+							<td>@(string.IsNullOrWhiteSpace(item.Notes) ? "-" : item.Notes)</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			<h4>RFQs for this BOM</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>RFQ Number</th>
+						<th>Supplier</th>
+						<th>Status</th>
+						<th>Created At</th>
+						<th class="text-end">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Model.RFQs.Any())
+					{
+						@foreach (var rfq in Model.RFQs)
+						{
+							<tr>
+								<td>
+									<a asp-controller="RFQ" asp-action="Details" asp-route-id="@rfq.RFQId" class="text-decoration-none">
+										@rfq.RFQNumber
+									</a>
+								</td>
+								<td>@rfq.SupplierName</td>
+								<td>
+									<span class="badge @(rfq.Status == "Draft" ? "bg-secondary"
+                                        : rfq.Status == "Sent" ? "bg-warning text-dark"
+                                        : rfq.Status == "Received" ? "bg-success"
+                                        : "bg-danger")">
+										@rfq.Status
+									</span>
+								</td>
+								<td>@rfq.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+								<td class="text-end">
+									<a asp-controller="RFQ" asp-action="Details" asp-route-id="@rfq.RFQId" class="text-primary" data-bs-toggle="tooltip" title="View RFQ">
+										<i class="fa-solid fa-eye"></i>
+									</a>
+								</td>
+							</tr>
+						}
+					}
+					else
+					{
+						<tr>
+							<td colspan="5" class="text-center text-muted">No RFQs generated for this BOM.</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+
+		</main>
+	</div>
+</div>
+
+@functions {
+	string GetStatusBadgeClass(string status)
+	{
+		return status switch
+		{
+			"Draft" => "bg-secondary",
+			"Incomplete" => "bg-warning text-dark",
+			"Ready" => "bg-success",
+			"Locked" => "bg-danger",
+			_ => "bg-light text-dark"
+		};
+	}
+}

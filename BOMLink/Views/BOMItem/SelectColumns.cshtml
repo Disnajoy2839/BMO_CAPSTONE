@@ -1,0 +1,71 @@
+﻿@model BOMLink.ViewModels.BOMItemViewModels.ImportBOMItemsViewModel
+
+@{
+	ViewData["Title"] = "Select Columns for Import";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a asp-action="Index" asp-route-bomId="@Model.BOMId" class="btn btn-outline-secondary w-100 mb-3">
+					Back to BOM Items
+				</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Select Columns</h2>
+            <form asp-action="ProcessImport" asp-controller="BOMItem" method="post">
+                <input type="hidden" name="BOMId" value="@Model.BOMId" />
+
+                @if (!string.IsNullOrEmpty(Model.FilePath))
+                {
+                    <!-- CSV/Excel Import -->
+                    <input type="hidden" name="FilePath" value="@Model.FilePath" />
+                    <p>Detected file: <strong>@System.IO.Path.GetFileName(Model.FilePath)</strong></p>
+
+                    <label>Select Part Number Column:</label>
+                    <input type="number" name="PartNumberColumn" class="form-control" required />
+
+                    <label>Select Quantity Column:</label>
+                    <input type="number" name="QuantityColumn" class="form-control" required />
+                }
+                else if (Model.ExtractedParts != null && Model.ExtractedParts.Count > 0)
+                {
+                    <!-- OCR Import -->
+                    <h4>Detected Parts from OCR:</h4>
+                    <ul>
+                        @foreach (var part in Model.ExtractedParts)
+                        {
+                            <li>@part.PartNumber - Quantity: @part.Quantity</li>
+                        }
+                    </ul>
+
+                    <p>Select which columns contain the part numbers and quantities.</p>
+                    <label>Select Part Number Column:</label>
+                    <input type="number" name="PartNumberColumn" class="form-control" required />
+
+                    <label>Select Quantity Column:</label>
+                    <input type="number" name="QuantityColumn" class="form-control" required />
+
+                    <!-- Preserve Extracted Data -->
+                    @for (int i = 0; i < Model.ExtractedParts.Count; i++)
+                    {
+                        <input type="hidden" name="ExtractedParts[@i].PartNumber" value="@Model.ExtractedParts[i].PartNumber" />
+                        <input type="hidden" name="ExtractedParts[@i].Quantity" value="@Model.ExtractedParts[i].Quantity" />
+                    }
+                }
+                else
+                {
+                    <p class="text-danger">No data found. Please upload a valid file.</p>
+                }
+
+                <button type="submit" class="btn btn-outline-primary mt-3">Proceed with Import</button>
+            </form>
+		</main>
+	</div>
+</div>

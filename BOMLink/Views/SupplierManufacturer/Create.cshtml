@@ -1,0 +1,27 @@
+﻿@model BOMLink.ViewModels.SupplierManufacturerViewModel.SupplierManufacturerViewModel
+@{
+    ViewData["Title"] = "Create Supplier-Manufacturer Link";
+}
+
+<h2>Create Supplier-Manufacturer Link</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Supplier</label>
+        <select asp-for="SupplierId" asp-items="@(new SelectList(Model.Suppliers, "Id", "Name"))" class="form-select">
+            <option value="">Select a Supplier</option>
+        </select>
+        <span asp-validation-for="SupplierId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Manufacturers</label>
+        <select asp-for="SelectedManufacturerIds" asp-items="@(new SelectList(Model.Manufacturers, "Id", "Name"))" class="form-select" multiple name="SelectedManufacturerIds">
+
+        </select>
+        <span asp-validation-for="SelectedManufacturerIds" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary">Save</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+</form>

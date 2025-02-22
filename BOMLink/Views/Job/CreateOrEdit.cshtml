@@ -1,0 +1,60 @@
+﻿@model BOMLink.ViewModels.JobViewModels.CreateOrEditJobViewModel
+
+@{
+    bool isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Job" : "Create Job";
+    string submitText = isEdit ? "Save Changes" : "Create Job";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="CreateOrEdit" method="post">
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Job Number</label>
+            <input asp-for="Number" class="form-control" required />
+            <span asp-validation-for="Number" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Description</label>
+            <input asp-for="Description" class="form-control" required />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Customer</label>
+            <select asp-for="CustomerId" asp-items="@(new SelectList(Model.Customers, "Id", "Name"))" class="form-select">
+                <option value="">-- Select Customer --</option>
+            </select>
+            <span asp-validation-for="CustomerId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Start Date</label>
+            <input asp-for="StartDate" type="date" class="form-control" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Contact Name</label>
+            <input asp-for="ContactName" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Status</label>
+            <select asp-for="Status" asp-items="Html.GetEnumSelectList<JobStatus>()" class="form-select"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-outline-primary">@submitText</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,50 @@
+﻿@model BOMLink.ViewModels.SupplierViewModels.CreateOrEditSupplierViewModel
+
+@{
+    bool isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Supplier" : "Add Supplier";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    <form asp-action="CreateOrEdit">
+        @Html.AntiForgeryToken()
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Supplier Name</label>
+            <input asp-for="Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="SupplierCode" class="form-label">Supplier Code</label>
+            <input asp-for="SupplierCode" class="form-control" required />
+            <span asp-validation-for="SupplierCode" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ContactName" class="form-label">Contact Name</label>
+            <input asp-for="ContactName" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ContactPhone" class="form-label">Contact Phone</label>
+            <input asp-for="ContactPhone" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ContactEmail" class="form-label">Contact Email</label>
+            <input asp-for="ContactEmail" class="form-control" required />
+            <span asp-validation-for="ContactEmail" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

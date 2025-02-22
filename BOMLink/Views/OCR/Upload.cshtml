@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "OCR File Upload";
+}
+
+<h2>Upload a BOM File</h2>
+
+<form method="post" enctype="multipart/form-data" asp-action="Upload" asp-controller="OCR">
+    <input type="file" name="file" accept=".jpg,.png,.pdf" required />
+    <button type="submit">Upload</button>
+</form>
+
+
+@if (ViewBag.ExtractedParts != null && ViewBag.ExtractedParts.Count > 0)
+{
+    <h3>Extracted OCR Data</h3>
+    <table class="table table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Part Number</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var part in ViewBag.ExtractedParts)
+            {
+                <tr>
+                    <td>@part.PartNumber</td>
+                    <td>@part.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+

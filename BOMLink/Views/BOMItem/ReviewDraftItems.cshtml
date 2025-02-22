@@ -1,0 +1,81 @@
+﻿@model List<BOMLink.Models.DraftBOMItem>
+
+@{
+	ViewData["Title"] = "Review Draft BOM Items";
+	int bomId = ViewData["BOMId"] != null ? (int)ViewData["BOMId"] : 0;
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				<a asp-action="Index" asp-route-bomId="@bomId" class="btn btn-outline-secondary w-100 mb-3">
+					Back to BOM Items
+				</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>Review Draft BOM Items</h2>
+			<p class="text-muted">These parts were not found in the database during import. Add them to the database and confirm when ready.</p>
+			@if (Model.Count == 0)
+			{
+				<p class="text-muted">All missing parts have been resolved.</p>
+			}
+			else
+			{
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Part Number</th>
+							<th>Quantity</th>
+							<th>Status</th>
+							<th class="text-end">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model)
+						{
+							<tr>
+								<td>@item.PartNumber</td>
+								<td>@item.Quantity</td>
+								<td>
+									@{
+										var partExists = ViewData["ExistingParts"] as List<string>;
+										if (partExists != null && partExists.Contains(item.PartNumber))
+										{
+											<span class="badge bg-success">Available</span>
+										}
+										else
+										{
+											<span class="badge bg-warning text-dark">Missing</span>
+										}
+									}
+								</td>
+								<td class="text-end">
+									<div class="d-flex flex-wrap gap-3 justify-content-end align-items-center">
+										<form asp-action="ConfirmPart" asp-route-id="@item.Id" method="post" class="d-inline">
+											<button type="submit" class="btn btn-link text-primary p-0 border-0" data-bs-toggle="tooltip" title="Confirm Part">
+												<i class="fa-solid fa-check"></i> <!-- Check Icon -->
+											</button>
+										</form>
+										<!-- Delete Item -->
+										<form asp-action="DeleteDraftItem" asp-route-id="@item.Id" method="post" class="d-inline"
+											  onsubmit="return confirm('Are you sure you want to delete this item?');">
+											<button type="submit" class="btn btn-link text-danger p-0 border-0" data-bs-toggle="tooltip" title="Delete Part">
+												<i class="fa-solid fa-trash"></i>
+											</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</main>
+	</div>
+</div>

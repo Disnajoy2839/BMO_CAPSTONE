@@ -1,0 +1,120 @@
+﻿@model BOMLink.ViewModels.BOMItemViewModels.CreateOrEditBOMItemViewModel
+
+@{
+	ViewData["Title"] = Model.Id == 0 ? "Add BOM Item" : "Edit BOM Item";
+}
+
+<div class="container mt-4">
+	<h2>@(Model.Id == 0 ? "Add BOM Item" : "Edit BOM Item")</h2>
+	<h5 class="text-muted">BOM Number: @Model.BOMNumber</h5>
+
+	<form asp-action="CreateOrEdit" method="post">
+		<input type="hidden" asp-for="BOMId" />
+		<input type="hidden" asp-for="Id" />
+
+		<div class="mb-3">
+			<label class="form-label fw-bold">Select Part</label>
+			<input type="text" id="partSearch" class="form-control" placeholder="Start typing a part number..." />
+			<input type="hidden" id="PartId" name="PartId" value="@Model.PartId" />
+			<span class="text-danger" asp-validation-for="PartId"></span>
+			<span class="text-danger" id="duplicateError" style="display:none;">🚫 This part is already in the BOM.</span>
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label fw-bold">Quantity</label>
+			<input type="number" class="form-control" asp-for="Quantity" min="1">
+			<span class="text-danger" asp-validation-for="Quantity"></span>
+		</div>
+
+		<div class="mb-3">
+			<label class="form-label fw-bold">Notes (Optional)</label>
+			<textarea class="form-control" asp-for="Notes" rows="3"></textarea>
+			<span class="text-danger" asp-validation-for="Notes"></span>
+		</div>
+
+		<div class="mt-4">
+			<button type="submit" class="btn btn-outline-primary" id="submitBtn">Save</button>
+			<a asp-action="Index" asp-route-bomId="@Model.BOMId" class="btn btn-outline-secondary">Cancel</a>
+		</div>
+	</form>
+</div>
+
+@section Scripts {
+	<!-- Load jQuery (ensure it's loaded first) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+	<!-- Load jQuery UI for autocomplete -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+	<!-- Load jQuery UI Styles -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css" />
+
+	<script>
+        $(document).ready(function () {
+            var existingParts = @Html.Raw(Json.Serialize(Model.ExistingPartIds));
+
+            // Pre-fill the partSearch field if editing an existing item
+            var selectedPartId = $("#PartId").val();
+            if (selectedPartId && selectedPartId !== "0") {
+                // Fetch part details to show in the search box
+                $.ajax({
+                    url: "@Url.Action("GetPartDetails", "BOMItem")",
+                    dataType: "json",
+                    data: { partId: selectedPartId },
+                    success: function (data) {
+                        if (data && data.partNumber) {
+                            $("#partSearch").val(data.partNumber + " - " + data.description);
+                        }
+                    }
+                });
+            }
+
+            $("#partSearch").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("SearchParts", "BOMItem")",
+                        dataType: "json",
+                        data: { term: request.term },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.partNumber + " - " + item.description,
+                                    value: item.partNumber,
+                                    id: item.id
+                                };
+                            }));
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    $("#partSearch").val(ui.item.label);
+                    $("#PartId").val(ui.item.id);
+                    validatePartSelection(ui.item.id);
+                    return false;
+                }
+            });
+
+            function validatePartSelection(selectedPartId) {
+                selectedPartId = parseInt(selectedPartId, 10);
+                if (existingParts.includes(selectedPartId)) {
+                    $("#duplicateError").show();
+                    $("#submitBtn").prop("disabled", true);
+                    $("#PartId").val("");
+                } else {
+                    $("#duplicateError").hide();
+                    $("#submitBtn").prop("disabled", false);
+                }
+            }
+
+            $("#partSearch").on("input", function () {
+                const partId = $("#PartId").val();
+                if (partId) {
+                    validatePartSelection(partId);
+                } else {
+                    $("#duplicateError").hide();
+                    $("#submitBtn").prop("disabled", false);
+                }
+            });
+        });
+	</script>
+}

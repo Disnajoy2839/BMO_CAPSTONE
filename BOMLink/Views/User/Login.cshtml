@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+@if (TempData["SessionExpired"] != null)
+{
+    <div id="tempMessage" class="alert alert-warning">
+        @TempData["SessionExpired"]
+    </div>
+}
+
+@if (TempData["InvalidLogin"] != null)
+{
+    <div id="tempMessage" class="alert alert-danger">
+        @TempData["InvalidLogin"]
+    </div>
+}
+
+<div class="d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4">
+        <div class="card-body">
+            <h2 class="text-center mb-4">Login</h2>
+            <form method="post" asp-controller="User" asp-action="Login">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter your username" required />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter your password" required />
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-outline-primary w-100">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,86 @@
+﻿@model BOMLink.ViewModels.RFQViewModel.RFQDetailsViewModel
+@{
+	ViewData["Title"] = "RFQ Details";
+}
+
+<div class="container-fluid mt-4">
+	<div class="row">
+		<!-- Sidebar Section -->
+		<aside class="col-md-3">
+			<div class="card shadow-sm p-3">
+				<h5 class="fw-bold">Actions</h5>
+				@if (Model.CanSendRFQ)
+				{
+					<form asp-controller="RFQ" asp-action="SendRFQ" asp-route-id="@Model.Id" method="post">
+						<button type="submit" class="btn btn-outline-primary w-100 mb-2">
+							Send RFQ
+						</button>
+					</form>
+					<a href="@Url.Action("CreateOrEdit", "RFQ", new { id = Model.Id })" class="btn btn-outline-warning w-100 mb-2">Edit RFQ</a>
+				}
+				<a href="@Url.Action("Index", "RFQ")" class="btn btn-outline-secondary w-100">Back to RFQ List</a>
+			</div>
+		</aside>
+
+		<!-- Main Content Section -->
+		<main class="col-md-9">
+			<h2>RFQ Details</h2>
+			<h5 class="text-muted">RFQ Number: @Model.RFQNumber</h5>
+
+			<table class="table mt-3">
+				<tr><th>Supplier:</th><td>@Model.SupplierName</td></tr>
+				<tr><th>BOM:</th><td>@Model.BOMNumber</td></tr>
+				<tr>
+					<th>Status:</th>
+					<td>
+						<span class="badge @(Model.Status == "Draft" ? "bg-secondary"
+                                                : Model.Status == "Sent" ? "bg-warning text-dark"
+                                                : Model.Status == "Received" ? "bg-success"
+                                                : "bg-danger")">
+							@Model.Status
+						</span>
+					</td>
+				</tr>
+				<tr><th>Total:</th><td>@Model.RFQTotal</td></tr>
+				<tr><th>Created By:</th><td>@Model.CreatedBy</td></tr>
+				<tr><th>Created At:</th><td>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td></tr>
+				<tr><th>Last Updated:</th><td>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</td></tr>
+				@if (Model.SentDate.HasValue)
+				{
+					<tr><th>Sent Date:</th><td>@Model.SentDate.Value.ToString("yyyy-MM-dd HH:mm")</td></tr>
+				}
+			</table>
+
+			<h4>RFQ Items</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Part Number</th>
+						<th>Description</th>
+						<th>Quantity</th>
+						<th>Manufacturer</th>
+						<th>Price</th>
+						<th>Total</th>
+						<th>UOM</th>
+						<th>ETA</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.RFQItems)
+					{
+						<tr>
+							<td>@item.PartNumber</td>
+							<td>@item.Description</td>
+							<td>@item.Quantity</td>
+							<td>@item.Manufacturer</td>
+							<td>@item.Price</td>
+							<td>@item.PartTotal</td>
+							<td>@item.UOM</td>
+							<td>@item.ETA</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</main>
+	</div>
+</div>
